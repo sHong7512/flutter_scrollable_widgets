@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:scrollable_widgets/const/colors.dart';
 import 'package:scrollable_widgets/layout/main_layout.dart';
 
-class RefreshIndicatorScreen extends StatelessWidget {
-  final List<int> numbers = List.generate(100, (index) => index);
+import '../const/enviroment.dart';
 
+class RefreshIndicatorScreen extends StatelessWidget {
   RefreshIndicatorScreen({Key? key}) : super(key: key);
 
   @override
@@ -13,7 +13,7 @@ class RefreshIndicatorScreen extends StatelessWidget {
       title: 'RefreshIndicatorScreen',
       body: RefreshIndicator(
         onRefresh: () async {
-          await Future.delayed(Duration(seconds: 3));
+          await Future.delayed(const Duration(seconds: 2));
           print('< ${this.runtimeType}> Update Complete!');
         },
         child: ListView(
@@ -25,31 +25,6 @@ class RefreshIndicatorScreen extends StatelessWidget {
                 ),
               )
               .toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget renderContainer({
-    required Color color,
-    required int index,
-    double? height,
-  }) {
-    if (index != null) {
-      print(index);
-    }
-
-    return Container(
-      height: height ?? 300,
-      color: color,
-      child: Center(
-        child: Text(
-          index.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 30,
-          ),
         ),
       ),
     );

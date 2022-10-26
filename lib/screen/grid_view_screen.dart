@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:scrollable_widgets/const/colors.dart';
 import 'package:scrollable_widgets/layout/main_layout.dart';
 
+import '../const/enviroment.dart';
+
 // GridView는 안드로이드 FlexBox랑 비슷
 class GridViewScreen extends StatelessWidget {
-  List<int> numbers = List.generate(100, (index) => index);
-
   GridViewScreen({Key? key}) : super(key: key);
 
   @override
@@ -65,32 +65,6 @@ class GridViewScreen extends StatelessWidget {
           index: index,
         );
       },
-    );
-  }
-
-
-  Widget renderContainer({
-    required Color color,
-    required int index,
-    double? height,
-  }) {
-    if (index != null) {
-      print(index);
-    }
-
-    return Container(
-      height: height ?? 300,
-      color: color,
-      child: Center(
-        child: Text(
-          index.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 30,
-          ),
-        ),
-      ),
     );
   }
 }
