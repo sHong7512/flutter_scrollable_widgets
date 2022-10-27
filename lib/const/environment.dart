@@ -4,36 +4,22 @@ import 'package:flutter/material.dart';
 
 final List<int> numbers = List.generate(100, (index) => index);
 
-Widget renderContainerSC({
-  required Color color,
-  int? index,
-}) {
-  if (index != null) {
-    log('$index');
-  }
-
-  return Container(
-    height: 300,
-    color: color,
-  );
-}
+final List<int> miniNumbers = List.generate(20, (index) => index);
 
 Widget renderContainer({
   required Color color,
   required int index,
   double? height,
 }) {
-  if (index != null) {
-    print(index);
-  }
-
+  log('loaded index :: $index');
   return Container(
+    key: Key('$index'),
     height: height ?? 300,
     color: color,
     child: Center(
       child: Text(
         index.toString(),
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w700,
           fontSize: 30,

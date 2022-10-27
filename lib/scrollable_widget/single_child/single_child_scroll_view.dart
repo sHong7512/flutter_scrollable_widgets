@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../layout/main_layout.dart';
-
 /// SingleChildScrollView 는 모든 아이템을 전부 메모리에 랜더링한다. (ListView랑은 반대)
 const List<String> singleChildList = [
   '기본 랜더링',
@@ -17,12 +15,14 @@ class SingleChildScrollViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: 'SingleChildScrollView',
+    return Scaffold(
+      appBar: AppBar(title: Text('SingleChildScrollView')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: singleChildList.asMap().entries
+        children: singleChildList
+            .asMap()
+            .entries
             .map((entry) => ElevatedButton(
                 onPressed: () {
                   GoRouter.of(context).push('/singlechild/${entry.key}');

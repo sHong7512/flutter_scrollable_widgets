@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:scrollable_widgets/layout/main_layout.dart';
 import 'package:scrollable_widgets/route/router_set.dart';
 
 void main() {
@@ -16,8 +15,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: 'home',
+    return Scaffold(
+      appBar: AppBar(title: Text('Scrollable Widgets'),),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,

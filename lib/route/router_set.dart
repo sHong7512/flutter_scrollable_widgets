@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:scrollable_widgets/screen/custom_scroll_view_screen.dart';
-import 'package:scrollable_widgets/screen/grid_view_screen.dart';
-import 'package:scrollable_widgets/screen/list_view_screen.dart';
-import 'package:scrollable_widgets/screen/refresh_indicator_screen.dart';
-import 'package:scrollable_widgets/screen/reorderable_list_view_screen.dart';
-import 'package:scrollable_widgets/screen/scrollbar_screen.dart';
-import 'package:scrollable_widgets/single_child/single_child_item_screen.dart';
-import 'package:scrollable_widgets/single_child/single_child_scroll_view.dart';
+import 'package:scrollable_widgets/scrollable_widget/gridview/grid_view_item_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/listview/list_view_item_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/options/option_item_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/options/options_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/reorderable/reorderable_item_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/custom/custom_scroll_view_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/gridview/grid_view_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/listview/list_view_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/reorderable/reorderable_list_view_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/single_child/single_child_item_screen.dart';
+import 'package:scrollable_widgets/scrollable_widget/single_child/single_child_scroll_view.dart';
 
 import '../main.dart';
 
@@ -25,23 +28,51 @@ class RouterSet {
             return MaterialPage(
                 child: SingleChildItemScreen(index: index, name: singleChildList[index]));
           },
-        )
+        ),
       ],
     ),
     GoRoute(
       path: '/list',
       name: 'ListView',
       pageBuilder: (context, state) => MaterialPage(child: ListViewScreen()),
+      routes: [
+        GoRoute(
+          path: ':index',
+          pageBuilder: (context, state) {
+            final int index = int.parse(state.params['index']!.toString());
+            return MaterialPage(child: ListViewItemScreen(index: index, name: listViewList[index]));
+          },
+        ),
+      ],
     ),
     GoRoute(
       path: '/grid',
       name: 'GridView',
       pageBuilder: (context, state) => MaterialPage(child: GridViewScreen()),
+      routes: [
+        GoRoute(
+          path: ':index',
+          pageBuilder: (context, state) {
+            final int index = int.parse(state.params['index']!.toString());
+            return MaterialPage(child: GridViewItemScreen(index: index, name: gridViewList[index]));
+          },
+        ),
+      ],
     ),
     GoRoute(
-      path: '/reorder',
+      path: '/reorderable',
       name: 'Reorderable',
       pageBuilder: (context, state) => MaterialPage(child: ReorderableListViewScreen()),
+      routes: [
+        GoRoute(
+          path: (':index'),
+          pageBuilder: (context, state) {
+            final int index = int.parse(state.params['index']!.toString());
+            return MaterialPage(
+                child: ReorderableItemScreen(index: index, name: reorderableList[index]));
+          },
+        ),
+      ],
     ),
     GoRoute(
       path: '/custom',
@@ -49,14 +80,18 @@ class RouterSet {
       pageBuilder: (context, state) => MaterialPage(child: CustomScrollViewScreen()),
     ),
     GoRoute(
-      path: '/scrollbar',
-      name: 'Scrollbar',
-      pageBuilder: (context, state) => MaterialPage(child: ScrollbarScreen()),
-    ),
-    GoRoute(
-      path: '/refresh',
-      name: 'Refresh',
-      pageBuilder: (context, state) => MaterialPage(child: RefreshIndicatorScreen()),
+      path: '/options',
+      name: 'etc Options',
+      pageBuilder: (context, state) => MaterialPage(child: OptionsScreen()),
+      routes: [
+        GoRoute(
+          path: ':index',
+          pageBuilder: (context, state) {
+            final int index = int.parse(state.params['index']!.toString());
+            return MaterialPage(child: OptionItemScreen(index: index, name: optionList[index]));
+          },
+        ),
+      ]
     ),
   ];
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../const/colors.dart';
-import '../const/enviroment.dart';
+import 'package:scrollable_widgets/const/colors.dart';
+import 'package:scrollable_widgets/const/environment.dart';
 
 class SingleChildItemScreen extends StatelessWidget {
   final int index;
@@ -26,7 +25,11 @@ class SingleChildItemScreen extends StatelessWidget {
       case 0:
         return SingleChildScrollView(
           child: Column(
-            children: rainbowColors.map((e) => renderContainerSC(color: e)).toList(),
+            children: rainbowColors
+                .asMap()
+                .entries
+                .map((e) => renderContainer(color: e.value, index: e.key))
+                .toList(),
           ),
         );
       case 1:
@@ -35,7 +38,7 @@ class SingleChildItemScreen extends StatelessWidget {
           physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-              renderContainerSC(color: Colors.black),
+              renderContainer(color: Colors.black, index: 0),
             ],
           ),
         );
@@ -45,7 +48,7 @@ class SingleChildItemScreen extends StatelessWidget {
           physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-              renderContainerSC(color: Colors.black),
+              renderContainer(color: Colors.black, index: 0),
             ],
           ),
         );
@@ -53,11 +56,14 @@ class SingleChildItemScreen extends StatelessWidget {
         return SingleChildScrollView(
           // physics: NeverScrollableScrollPhysics(), // 스크롤 안됨
           // physics: AlwaysScrollableScrollPhysics(), // 스크롤 됨
-          // physics: BouncingScrollPhysics(), // ios 스타일
+          physics: BouncingScrollPhysics(), // ios 스타일
           // physics: ClampingScrollPhysics(), // android 스타일
-          physics: ClampingScrollPhysics(), // android 스타일
           child: Column(
-            children: rainbowColors.map((e) => renderContainerSC(color: e)).toList(),
+            children: rainbowColors
+                .asMap()
+                .entries
+                .map((e) => renderContainer(color: e.value, index: e.key))
+                .toList(),
           ),
         );
       case 4:
@@ -65,7 +71,7 @@ class SingleChildItemScreen extends StatelessWidget {
           child: Column(
             children: numbers
                 .map(
-                  (e) => renderContainerSC(
+                  (e) => renderContainer(
                     color: rainbowColors[e % rainbowColors.length],
                     index: e,
                   ),
