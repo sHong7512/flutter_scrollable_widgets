@@ -135,6 +135,20 @@
             </list>
           </value>
         </entry>
+        <entry key="rect_getter">
+          <value>
+            <list>
+              <option value="$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/rect_getter-1.1.0/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="scroll_to_index">
+          <value>
+            <list>
+              <option value="$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/scroll_to_index-2.1.1/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="sky_engine">
           <value>
             <list>
@@ -191,6 +205,13 @@
             </list>
           </value>
         </entry>
+        <entry key="vertical_scrollable_tabview">
+          <value>
+            <list>
+              <option value="$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/vertical_scrollable_tabview-0.0.7/lib" />
+            </list>
+          </value>
+        </entry>
       </option>
     </properties>
     <CLASSES>
@@ -210,6 +231,8 @@
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/material_color_utilities-0.1.5/lib" />
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/meta-1.8.0/lib" />
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/path-1.8.2/lib" />
+      <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/rect_getter-1.1.0/lib" />
+      <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/scroll_to_index-2.1.1/lib" />
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.9.0/lib" />
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.10.0/lib" />
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.1.0/lib" />
@@ -217,6 +240,7 @@
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.2.1/lib" />
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.4.12/lib" />
       <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/vector_math-2.1.2/lib" />
+      <root url="file://$USER_HOME$/Library/flutter/.pub-cache/hosted/pub.dartlang.org/vertical_scrollable_tabview-0.0.7/lib" />
       <root url="file://$USER_HOME$/Library/flutter/bin/cache/pkg/sky_engine/lib" />
       <root url="file://$USER_HOME$/Library/flutter/packages/flutter/lib" />
       <root url="file://$USER_HOME$/Library/flutter/packages/flutter_test/lib" />
