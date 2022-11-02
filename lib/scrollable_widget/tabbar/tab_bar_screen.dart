@@ -1,42 +1,30 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:scrollable_widgets/const/environment.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../const/colors.dart';
+const List<String> tabBarList = [
+  '기본 TabBar',
+  'scroll + tab Library',
+  'scroll + tab Custom',
+];
 
-class TabBarScreen extends StatefulWidget {
+class TabBarScreen extends StatelessWidget {
   const TabBarScreen({Key? key}) : super(key: key);
-
-  @override
-  State<TabBarScreen> createState() => _TabBarScreenState();
-}
-
-class _TabBarScreenState extends State<TabBarScreen> with SingleTickerProviderStateMixin {
-  late TabController tabController = TabController(length: miniNumbers.length, vsync: this);
-
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('TabBarView Screen'),
-        bottom: TabBar(
-          controller: tabController,
-          isScrollable: true,
-          onTap: (page) => log('$page'),
-          tabs: miniNumbers.map((e) => Tab(text: '$e')).toList(),
-        ),
-      ),
-      body: TabBarView(
-        controller: tabController,
-        children: miniNumbers
-            .map((e) => renderContainer(color: rainbowColors[e % rainbowColors.length], index: e))
+      appBar: AppBar(title: Text('SingleChildScrollView')),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: tabBarList
+            .asMap()
+            .entries
+            .map((entry) => ElevatedButton(
+                onPressed: () {
+                  GoRouter.of(context).push('/tabbar/${entry.key}');
+                },
+                child: Text(entry.value)))
             .toList(),
       ),
     );
