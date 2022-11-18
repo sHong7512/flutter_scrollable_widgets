@@ -7,7 +7,7 @@ import 'package:widgets_visibility_provider/widgets_visibility_provider.dart';
 import 'custom_tab_bar.dart';
 
 /**
- * CustomTabBar랑 연동 사용
+ * * CustomTabBar, CustomTabCard랑 연동 사용.
  * _scrollCasing()의 case(CustomScrollMode.fix)를 조절하여 앱 설계(기획)에 맞춰주는게 좋음
  * @author : sHong (ksh7512@uangel.com)
  * @dependency :
@@ -17,38 +17,46 @@ import 'custom_tab_bar.dart';
 class CustomTabView extends StatefulWidget {
   CustomTabView({
     Key? key,
-    required this.tabScrollController,
-    required this.bodyScrollController,
+    required this.customTabConnector,
     required this.children,
     this.customScrollMode = CustomScrollMode.first,
     this.blockInitialIndexTabAnimate = true,
+    this.physics = const ClampingScrollPhysics(),
   }) : super(key: key);
 
+  final CustomTabConnector customTabConnector;
   final List<Widget> children;
-  final AutoScrollController tabScrollController;
-  final AutoScrollController bodyScrollController;
   final CustomScrollMode customScrollMode;
   final bool blockInitialIndexTabAnimate;
+  final ScrollPhysics physics;
 
   @override
   State<CustomTabView> createState() => _CustomTabViewState();
 }
 
 class _CustomTabViewState extends State<CustomTabView> {
-  final Duration _duration = const Duration(milliseconds: 1);
+  late CustomTabBarState? _tabBarState;
+  late AutoScrollController _bodyScrollController;
+  late AutoScrollController _tabScrollController;
 
+  final Duration _duration = const Duration(milliseconds: 1);
   List<int> _curIndexList = [];
 
   @override
   void initState() {
     super.initState();
+    _tabBarState = widget.customTabConnector.tabBarKey.currentState;
+    _bodyScrollController = widget.customTabConnector.bodyScrollController;
+    _tabScrollController = widget.customTabConnector.tabScrollController;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if(_tabBarState?.widget.initialIndex == 0) return;
+
       if(widget.blockInitialIndexTabAnimate) {
-        CustomTabBar.isTabScrolling = true;
+        _tabBarState?.isTabScrolling = true;
       }
-      CustomTabBar.autoScrollPosition = AutoScrollPosition.begin;
-      widget.bodyScrollController.scrollToIndex(
-        CustomTabBar.initialIndex,
+      _tabBarState?.autoScrollPosition = AutoScrollPosition.begin;
+      _bodyScrollController.scrollToIndex(
+        _tabBarState?.widget.initialIndex ?? 0,
         duration: const Duration(milliseconds: 1),
         preferPosition: AutoScrollPosition.begin,
       );
@@ -77,23 +85,24 @@ class _CustomTabViewState extends State<CustomTabView> {
               if (bufIndexList.contains(i)) cnt++;
             }
             if (bufIndexList.length == _curIndexList.length && bufIndexList.length == cnt) {
-              log('Same Index is Skip');
+              // log('Same Index is Skip');
               return;
             }
             _curIndexList = bufIndexList;
 
-            if (CustomTabBar.isTabScrolling) return;
+            if (_tabBarState?.isTabScrolling ?? true) return;
             log('${bufIndexList.toString()} :: ${event.notification}');
             _scrollCasing(notification, bufIndexList);
           }
         },
         child: Listener(
           onPointerMove: (event) {
-            CustomTabBar.isTabScrolling = false;
+            _tabBarState?.isTabScrolling = false;
           },
           child: ListView.builder(
+            physics: widget.physics,
             scrollDirection: Axis.vertical,
-            controller: widget.bodyScrollController,
+            controller: _bodyScrollController,
             itemCount: widget.children.length,
             itemBuilder: (context, index) {
               return _tabViewItem(index, widget.children[index]);
@@ -109,7 +118,7 @@ class _CustomTabViewState extends State<CustomTabView> {
       data: index,
       child: AutoScrollTag(
         key: ValueKey(index),
-        controller: widget.bodyScrollController,
+        controller: _bodyScrollController,
         index: index,
         child: child,
       ),
@@ -121,38 +130,37 @@ class _CustomTabViewState extends State<CustomTabView> {
     switch (widget.customScrollMode) {
       case CustomScrollMode.first:
         index = indexList.first;
-        CustomTabBar.autoScrollPosition = AutoScrollPosition.begin;
+        _tabBarState?.autoScrollPosition = AutoScrollPosition.begin;
         break;
       case CustomScrollMode.last:
         index = indexList.last;
-        CustomTabBar.autoScrollPosition = AutoScrollPosition.end;
+        _tabBarState?.autoScrollPosition = AutoScrollPosition.end;
         break;
       case CustomScrollMode.middle:
         index = indexList.middle;
-        CustomTabBar.autoScrollPosition = AutoScrollPosition.middle;
+        _tabBarState?.autoScrollPosition = AutoScrollPosition.middle;
         break;
       case CustomScrollMode.fix:    /// 앱 상황에 맞게 조절 필요
         if (indexList.contains(0)) {
           index = indexList.first;
-          CustomTabBar.autoScrollPosition = AutoScrollPosition.begin;
+          _tabBarState?.autoScrollPosition = AutoScrollPosition.begin;
         } else if (indexList.contains(widget.children.length - 1)) {
           index = indexList.last;
-          CustomTabBar.autoScrollPosition = AutoScrollPosition.end;
+          _tabBarState?.autoScrollPosition = AutoScrollPosition.end;
         } else {
           index = indexList.middle;
-          CustomTabBar.autoScrollPosition = AutoScrollPosition.middle;
+          _tabBarState?.autoScrollPosition = AutoScrollPosition.begin;
         }
         break;
       case CustomScrollMode.delta:
         if (notification is ScrollUpdateNotification) {
           final double delta = notification.scrollDelta ?? 0;
-          log('$delta');
           if (delta >= 0.2) {
-            CustomTabBar.stateUpdate(indexList.last);
-            widget.tabScrollController.scrollToIndex(indexList.last, duration: _duration);
+            _tabBarState?.stateUpdate(indexList.last);
+            _tabScrollController.scrollToIndex(indexList.last, duration: _duration);
           } else if (delta <= -0.2) {
-            CustomTabBar.stateUpdate(indexList.first);
-            widget.tabScrollController.scrollToIndex(indexList.first, duration: _duration);
+            _tabBarState?.stateUpdate(indexList.first);
+            _tabScrollController.scrollToIndex(indexList.first, duration: _duration);
           }
         }
         return;
@@ -160,8 +168,8 @@ class _CustomTabViewState extends State<CustomTabView> {
         throw Exception('Not Defined case');
     }
 
-    CustomTabBar.stateUpdate(index);
-    widget.tabScrollController.scrollToIndex(
+    _tabBarState?.stateUpdate(index);
+    _tabScrollController.scrollToIndex(
       index,
       duration: _duration,
       preferPosition: AutoScrollPosition.middle,

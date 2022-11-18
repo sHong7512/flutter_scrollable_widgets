@@ -5,9 +5,8 @@ import 'package:scrollable_widgets/const/colors.dart';
 import 'package:scrollable_widgets/const/environment.dart';
 import 'package:vertical_scrollable_tabview/vertical_scrollable_tabview.dart';
 
-import 'package:scroll_to_index/scroll_to_index.dart' show AutoScrollController;
-
 import 'custom/custom_tab_bar.dart';
+import 'custom/custom_tab_card.dart';
 import 'custom/custom_tab_view.dart';
 
 class TabBarItemScreen extends StatefulWidget {
@@ -27,8 +26,6 @@ class TabBarItemScreen extends StatefulWidget {
 class _TabBarItemScreenState extends State<TabBarItemScreen> with SingleTickerProviderStateMixin {
   late final TabController _tabController0 = TabController(length: miniNumbers.length, vsync: this);
   late final TabController _tabController1 = TabController(length: miniNumbers.length, vsync: this);
-  late final AutoScrollController _bodyScrollController = AutoScrollController(axis: Axis.vertical);
-  late final AutoScrollController _tabScrollController = AutoScrollController(axis: Axis.horizontal);
 
   @override
   Widget build(BuildContext context) {
@@ -90,26 +87,31 @@ class _TabBarItemScreenState extends State<TabBarItemScreen> with SingleTickerPr
         );
       case 2:
         List<String> miniNumbers = List.generate(30, (index) => 'item $index');
+        final CustomTabConnector customTabConnector = CustomTabConnector(
+            tabs: miniNumbers
+                .asMap()
+                .entries
+                .map((e) => CustomTabCard(
+                      cardKey: GlobalKey<CustomTabCardState>(),
+                      customTabModel: CustomTabModel(label: e.value),
+                    ))
+                .toList());
+
         return Scaffold(
           appBar: AppBar(title: Text(widget.name)),
           body: Column(
             children: [
-              CustomTabBar(
-                tabScrollController: _tabScrollController,
-                bodyScrollController: _bodyScrollController,
-                tabs: miniNumbers.map((e) => Text('$e')).toList(),
-              ),
+              customTabConnector.customTabBar!,
               Expanded(
                 child: CustomTabView(
-                  tabScrollController: _tabScrollController,
-                  bodyScrollController: _bodyScrollController,
+                  customTabConnector: customTabConnector,
+                  customScrollMode: CustomScrollMode.fix,
                   children: miniNumbers
                       .asMap()
                       .entries
                       .map((e) => renderContainer(
                           color: rainbowColors[e.key % rainbowColors.length], index: e.key))
                       .toList(),
-                  customScrollMode: CustomScrollMode.fix,
                 ),
               ),
             ],

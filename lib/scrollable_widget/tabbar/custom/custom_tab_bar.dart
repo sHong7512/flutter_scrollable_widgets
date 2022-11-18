@@ -1,19 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import 'custom_tab_card.dart';
+
 /**
- * CustomTabView랑 연동 사용.
- * 빠른 구현을 위해 static 변수로 선언함.
-    => 여러 탭바 필요시 static 풀고 객체화 해서 사용하면 됨.
+ * * CustomTabView, CustomTabCard랑 연동 사용.
+ * _scrollCasing()의 case(CustomScrollMode.fix)를 조절하여 앱 설계(기획)에 맞춰주는게 좋음
  * @author : sHong (ksh7512@uangel.com)
- * @dependency :
-    scroll_to_index: ^3.0.1
-    widgets_visibility_provider: ^3.0.1
+ * @dependency : scroll_to_index: ^3.0.1
  */
+class CustomTabConnector {
+  CustomTabConnector({required List<CustomTabCard> tabs}) {
+    customTabBar = CustomTabBar(
+      key: tabBarKey,
+      tabScrollController: tabScrollController,
+      bodyScrollController: bodyScrollController,
+      tabs: tabs,
+    );
+  }
+  final GlobalKey<CustomTabBarState> tabBarKey = GlobalKey();
+  final AutoScrollController bodyScrollController = AutoScrollController(axis: Axis.vertical);
+  final AutoScrollController tabScrollController = AutoScrollController(axis: Axis.horizontal);
+  CustomTabBar? customTabBar;
+}
+
 class CustomTabBar extends StatefulWidget {
   final AutoScrollController tabScrollController;
   final AutoScrollController bodyScrollController;
-  final List<Widget> tabs;
+  final List<CustomTabCard> tabs;
   final Duration scrollDuration;
 
   CustomTabBar({
@@ -22,39 +36,33 @@ class CustomTabBar extends StatefulWidget {
     required this.bodyScrollController,
     required this.tabs,
     this.scrollDuration = const Duration(milliseconds: 300),
-    int initialIndex = 0,
-  }) {
-    _state = _CustomTabBarState();
-    CustomTabBar.initialIndex = initialIndex;
-  }
+    this.initialIndex = 0,
+  }): super(key: key);
 
-  static bool isTabScrolling = false;
-
-  static int initialIndex = 0;
-
-  static AutoScrollPosition autoScrollPosition = AutoScrollPosition.begin;
-
-  static _CustomTabBarState? _state;
-
-  static stateUpdate(int index) {
-    _state?.stateUpdate(index);
-  }
+  int initialIndex;
 
   @override
-  State<CustomTabBar> createState() => _state!;
+  State<CustomTabBar> createState() => CustomTabBarState();
 }
 
-class _CustomTabBarState extends State<CustomTabBar> {
+class CustomTabBarState extends State<CustomTabBar> {
+  AutoScrollPosition autoScrollPosition = AutoScrollPosition.begin;
+  bool isTabScrolling = false;
+
   int _currentSelectIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _currentSelectIndex = CustomTabBar.initialIndex;
+    _currentSelectIndex = widget.initialIndex;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      stateUpdate(_currentSelectIndex);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    stateUpdate(_currentSelectIndex);
     return SingleChildScrollView(
       controller: widget.tabScrollController,
       scrollDirection: Axis.horizontal,
@@ -63,6 +71,15 @@ class _CustomTabBarState extends State<CustomTabBar> {
         widget.tabs.asMap().entries.map((entry) => _tabItem(entry.key, entry.value)).toList(),
       ),
     );
+
+    /// ListView.builder는 parent의 height를 정해줘야 사용가능
+    // return ListView.builder(
+    //   shrinkWrap: true,
+    //   controller: widget.tabScrollController,
+    //   scrollDirection: Axis.horizontal,
+    //   itemCount: widget.tabs.length,
+    //   itemBuilder: (BuildContext context, int index) => _tabItem(index, widget.tabs[index]),
+    // );
   }
 
   Widget _tabItem(int index, Widget child) {
@@ -70,16 +87,15 @@ class _CustomTabBarState extends State<CustomTabBar> {
         key: ValueKey(index),
         controller: widget.tabScrollController,
         index: index,
-        child: TextButton(
-          style: TextButton.styleFrom(
-              backgroundColor: index == _currentSelectIndex ? Colors.black : Colors.white),
-          onPressed: () {
-            CustomTabBar.isTabScrolling = true;
+        child: GestureDetector(
+          // style: TextButton.styleFrom(backgroundColor: Colors.transparent),
+          onTap: () {
+            isTabScrolling = true;
             stateUpdate(index);
             widget.bodyScrollController.scrollToIndex(
               index,
               duration: widget.scrollDuration,
-              preferPosition: CustomTabBar.autoScrollPosition,
+              preferPosition: autoScrollPosition,
             );
             widget.tabScrollController.scrollToIndex(
               index,
@@ -91,11 +107,11 @@ class _CustomTabBarState extends State<CustomTabBar> {
         ));
   }
 
-  stateUpdate(int index) async {
+  stateUpdate(int index) {
     if (mounted) {
-      setState(() {
-        _currentSelectIndex = index;
-      });
+      widget.tabs[_currentSelectIndex].cardKey.currentState?.setSelect(false);
+      widget.tabs[index].cardKey.currentState?.setSelect(true);
+      _currentSelectIndex = index;
     }
   }
 
