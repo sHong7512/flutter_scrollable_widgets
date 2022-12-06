@@ -105,7 +105,7 @@ class _TabBarItemScreenState extends State<TabBarItemScreen> with SingleTickerPr
               Expanded(
                 child: CustomTabView(
                   customTabConnector: customTabConnector,
-                  customScrollMode: CustomScrollMode.fix,
+                  customScrollMode: CustomScrollMode.delta,
                   children: miniNumbers
                       .asMap()
                       .entries

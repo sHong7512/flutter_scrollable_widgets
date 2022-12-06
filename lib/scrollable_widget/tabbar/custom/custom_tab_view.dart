@@ -75,7 +75,7 @@ class _CustomTabViewState extends State<CustomTabView> {
             final List<int> bufIndexList = [];
             for (final e in event.positionDataList) {
               if (e.endPosition - e.startPosition < e.viewportSize - 1 &&
-                  (e.startPosition < 0 || e.endPosition > e.viewportSize + 1)) continue;
+                  (e.endPosition < 0 || e.startPosition > e.viewportSize)) continue;
               bufIndexList.add(int.parse(e.data.toString()));
             }
             if (bufIndexList.isEmpty) return;
@@ -137,10 +137,10 @@ class _CustomTabViewState extends State<CustomTabView> {
         _tabBarState?.autoScrollPosition = AutoScrollPosition.end;
         break;
       case CustomScrollMode.middle:
-        index = indexList.middle;
+        index = indexList.middle(widget.children.length - 1);
         _tabBarState?.autoScrollPosition = AutoScrollPosition.middle;
         break;
-      case CustomScrollMode.fix:    /// 앱 상황에 맞게 조절 필요
+      case CustomScrollMode.fix:
         if (indexList.contains(0)) {
           index = indexList.first;
           _tabBarState?.autoScrollPosition = AutoScrollPosition.begin;
@@ -148,22 +148,23 @@ class _CustomTabViewState extends State<CustomTabView> {
           index = indexList.last;
           _tabBarState?.autoScrollPosition = AutoScrollPosition.end;
         } else {
-          index = indexList.middle;
+          index = indexList.middle(widget.children.length - 1);
           _tabBarState?.autoScrollPosition = AutoScrollPosition.begin;
         }
         break;
       case CustomScrollMode.delta:
         if (notification is ScrollUpdateNotification) {
           final double delta = notification.scrollDelta ?? 0;
-          if (delta >= 0.2) {
-            _tabBarState?.stateUpdate(indexList.last);
-            _tabScrollController.scrollToIndex(indexList.last, duration: _duration);
-          } else if (delta <= -0.2) {
-            _tabBarState?.stateUpdate(indexList.first);
-            _tabScrollController.scrollToIndex(indexList.first, duration: _duration);
+          if (delta > 0) {
+            index = indexList.middle(widget.children.length - 1, true);
+          } else {
+            index = indexList.middle(widget.children.length - 1);
           }
+        } else{
+          index = indexList.middle(widget.children.length - 1);
         }
-        return;
+        _tabBarState?.autoScrollPosition = AutoScrollPosition.begin;
+        break;
       default:
         throw Exception('Not Defined case');
     }
@@ -177,14 +178,37 @@ class _CustomTabViewState extends State<CustomTabView> {
   }
 }
 
+// extension _ListMiddleExtension<T> on List {
+//   T get middle => this[(length / 2).toInt()];
+// }
+
 extension _ListMiddleExtension<T> on List {
-  T get middle => this[(length / 2).toInt()];
+  T middle(int maxParentIndex,[bool isRound = false]) {
+    if(length <= 1){
+      return this[0];
+    }
+
+    final midBuf = this[(length / 2).toInt()];
+    if (length % 2 == 0) {
+      final midBuf2 = this[(length / 2 - 1).toInt()];
+      double allCenterValue = maxParentIndex / 2;
+      final centerValue = (midBuf + midBuf2) / 2;
+
+      if(isRound){
+        return centerValue >= allCenterValue ? midBuf : midBuf2;
+      }else{
+        return centerValue > allCenterValue ? midBuf : midBuf2;
+      }
+    } else {
+      return midBuf;
+    }
+  }
 }
 
 enum CustomScrollMode {
   first, // 고정값으로 first 처리
   last, // 고정값으로 last 처리
-  middle, // 고정값으로 middle 처리
-  fix, // first middle last 합친거
-  delta, // 델타값으로 first last 처리
+  middle, // 리스트 전체 길이를 고려한 변형 middle 처리
+  fix, // first + middle + last
+  delta, // middle + delta (+ 스크롤은 first)
 }
